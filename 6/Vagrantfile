@@ -1,0 +1,27 @@
+ENV['VAGRANT_SERVER_URL'] = 'https://vagrant.elab.pro'
+Vagrant.configure("2") do |config|
+  config.vm.network "public_network"
+
+   
+   config.vm.define "sf-ubuntu18-py" do | py18 |
+     py18.vm.hostname = "sf-ubuntu18-py"
+     py18.vm.disk :disk, size: "30GB", primary: true
+     py18.vm.box = "ubuntu/18.04"
+     py18.vm.provision "shell", inline: <<-SHELL
+       apt-get update
+       apt-get -y upgrade
+       apt-get -y install  python3-pip  python3 vim wget libpq-dev
+       su -c 'python3 -m pip install --upgrade pip' vagrant
+       su -c 'python3 -m pip install psycopg2 django' vagrant
+       su -c 'echo "PATH=/\$HOME/.local/bin:\$PATH; export PATH" >> ~/.bashrc; source ~/.bashrc' vagrant
+       
+     SHELL
+       py18.vm.provider :virtualbox do |vv|
+         vv.memory = "2048"
+         vv.cpus = "2"
+         vv.name = "sf-ubuntu18-py18"
+       end
+   end
+
+
+end
